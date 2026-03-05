@@ -18,7 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
 
 const mockMembers = [
-    { id: "1", name: "Federico", email: "ficofrones@gmail.com", role: "ADMIN", status: "ACTIVO" },
+    { id: "1", name: "Fico", email: "ficofrones@gmail.com", role: "ADMIN", status: "ACTIVO" },
     { id: "2", name: "Meli", email: "meliefb7@gmail.com", role: "EDITOR", status: "ACTIVO" },
 ];
 
