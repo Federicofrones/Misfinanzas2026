@@ -39,9 +39,11 @@ const items = [
 ]
 
 import Image from "next/image"
+import { useSidebar } from "@/components/ui/sidebar"
 
 export function AppSidebar() {
     const pathname = usePathname()
+    const { setOpenMobile } = useSidebar()
 
     return (
         <Sidebar variant="floating" collapsible="icon">
@@ -65,7 +67,7 @@ export function AppSidebar() {
                                         isActive={pathname === item.url}
                                         tooltip={item.title}
                                     >
-                                        <Link href={item.url}>
+                                        <Link href={item.url} onClick={() => setOpenMobile(false)}>
                                             <item.icon />
                                             <span>{item.title}</span>
                                         </Link>
