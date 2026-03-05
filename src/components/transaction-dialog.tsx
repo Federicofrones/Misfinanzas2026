@@ -128,9 +128,13 @@ export function TransactionDialog({ workspaceId }: { workspaceId: string }) {
                                         <FormControl>
                                             <Input
                                                 type="number"
+                                                step="0.01"
                                                 placeholder="0.00"
-                                                {...field}
-                                                onChange={e => field.onChange(parseFloat(e.target.value))}
+                                                value={field.value === 0 ? '' : field.value}
+                                                onChange={e => {
+                                                    const val = parseFloat(e.target.value);
+                                                    field.onChange(isNaN(val) ? 0 : val);
+                                                }}
                                             />
                                         </FormControl>
                                         <FormMessage />

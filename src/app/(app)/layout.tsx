@@ -16,7 +16,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         <TransactionDialog workspaceId="default-workspace" />
                     </div>
                 </header>
-                <main className="flex-1 p-6 overflow-y-auto">
+                <main className="flex-1 p-4 sm:p-6 overflow-y-auto overflow-x-hidden">
                     {children}
                 </main>
             </SidebarInset>

@@ -26,6 +26,7 @@ import {
 } from "recharts"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { useAuth } from "@/lib/auth/guards"
 
 const data = [
     { name: "Lun", ingresos: 4500, gastos: 2400 },
@@ -45,10 +46,19 @@ const categoryData = [
 ]
 
 export default function DashboardPage() {
+    const { user } = useAuth();
+
+    let greeting = "¡Hola, Pareja! 👋";
+    if (user?.email === "meliefb7@gmail.com") {
+        greeting = "Bienvenida Meli 👋";
+    } else if (user?.email === "ficofrones@gmail.com") {
+        greeting = "¿Qué andas Fico? 👋";
+    }
+
     return (
         <div className="flex flex-col gap-8">
             <div>
-                <h1 className="text-3xl font-outfit font-bold">¡Hola, Pareja! 👋</h1>
+                <h1 className="text-3xl font-outfit font-bold">{greeting}</h1>
                 <p className="text-muted-foreground">Aquí está el resumen de su economía compartida este mes.</p>
             </div>
 
