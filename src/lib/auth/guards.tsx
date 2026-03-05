@@ -1,3 +1,5 @@
+"use client"
+
 import { auth } from "@/lib/firebase/client";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { redirect } from "next/navigation";

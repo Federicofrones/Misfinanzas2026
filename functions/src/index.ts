@@ -13,8 +13,13 @@ export const onTransactionWrite = functions.firestore
         const before = change.before.data();
         const after = change.after.data();
 
+        if (!after && !before) return null;
+
+        const data = after || before;
+        if (!data || !data.date) return null;
+
         // Determine the monthKey involved
-        const monthKey = after ? after.date.toDate().toISOString().slice(0, 7) : before.date.toDate().toISOString().slice(0, 7);
+        const monthKey = data.date.toDate().toISOString().slice(0, 7);
 
         // Trigger recalculation for this month
         await calculateMonthlyTotals(wsId, monthKey);
