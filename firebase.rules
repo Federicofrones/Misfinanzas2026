@@ -1,0 +1,66 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function getMemberDoc(wsId) {
+      return get(/databases/$(database)/documents/workspaces/$(wsId)/members/$(request.auth.uid));
+    }
+    
+    function isMember(wsId) {
+      return isSignedIn() && exists(/databases/$(database)/documents/workspaces/$(wsId)/members/$(request.auth.uid));
+    }
+    
+    function getRole(wsId) {
+      return getMemberDoc(wsId).data.role;
+    }
+
+    // Workspaces
+    match /workspaces/{workspaceId} {
+      allow read: if isMember(workspaceId);
+      allow write: if false; // Only via Server Admin SDK
+      
+      // Members subcollection
+      match /members/{userId} {
+        allow read: if isMember(workspaceId);
+        allow write: if false; // Only via Server Admin SDK
+      }
+      
+      // Categories, Accounts, Budgets, Settings
+      match /categories/{id} { allow read: if isMember(workspaceId); allow write: if false; }
+      match /accounts/{id} { allow read: if isMember(workspaceId); allow write: if false; }
+      match /budgets/{id} { allow read: if isMember(workspaceId); allow write: if false; }
+      match /settings/{id} { allow read: if isMember(workspaceId); allow write: if false; }
+      
+      // Transactions: CRUD for ADMIN and EDITOR
+      match /transactions/{txId} {
+        allow read: if isMember(workspaceId);
+        allow create, update, delete: if isMember(workspaceId) && (getRole(workspaceId) == 'ADMIN' || getRole(workspaceId) == 'EDITOR');
+      }
+      
+      // Alerts: Read only for members
+      match /alerts/{alertId} {
+        allow read: if isMember(workspaceId);
+        allow write: if false; // Only via Cloud Functions/Admin
+      }
+
+      // Monthly aggregates
+      match /monthly/{monthKey} {
+        allow read: if isMember(workspaceId);
+        allow write: if false; // Only via Cloud Functions
+      }
+    }
+
+    // Invites: Top level collection
+    match /invites/{token} {
+      // Allow read if user is signed in and their email matches the invite email
+      allow read: if isSignedIn() && request.auth.token.email == resource.data.email;
+      allow write: if false; // Only via Server Admin SDK
+    }
+  }
+}

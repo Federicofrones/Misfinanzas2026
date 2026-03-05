@@ -1,0 +1,25 @@
+import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
+import { TransactionDialog } from "@/components/transaction-dialog"
+
+export default function AppLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset className="bg-background/50 backdrop-blur-sm">
+                <header className="flex h-16 shrink-0 items-center justify-between gap-2 px-4 border-b border-border/40 sticky top-0 bg-background/80 backdrop-blur-md z-10">
+                    <div className="flex items-center gap-2">
+                        <SidebarTrigger className="-ml-1" />
+                    </div>
+                    <div className="flex items-center gap-3">
+                        {/* El workspaceId debería venir del contexto del usuario/app */}
+                        <TransactionDialog workspaceId="default-workspace" />
+                    </div>
+                </header>
+                <main className="flex-1 p-6 overflow-y-auto">
+                    {children}
+                </main>
+            </SidebarInset>
+        </SidebarProvider>
+    )
+}
