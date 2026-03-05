@@ -35,7 +35,7 @@ const items = [
     { title: "Reportes", url: "/app/reports", icon: BarChart3 },
     { title: "Conciliación", url: "/app/reconcile", icon: Scale },
     { title: "Alertas", url: "/app/alerts", icon: Bell },
-    { title: "Configuración", url: "/app/settings/workspace", icon: Settings },
+    { title: "Configuración", url: "/app/settings", icon: Settings },
 ]
 
 export function AppSidebar() {
