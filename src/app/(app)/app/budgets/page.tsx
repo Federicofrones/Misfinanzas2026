@@ -6,7 +6,8 @@ import {
     Plus,
     AlertCircle,
     PiggyBank,
-    PencilLine
+    PencilLine,
+    Trash
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -22,6 +23,12 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
@@ -31,21 +38,53 @@ const initialBudgets: any[] = [];
 export default function BudgetsPage() {
     const [budgets, setBudgets] = React.useState(initialBudgets);
     const [editingBudget, setEditingBudget] = React.useState<any>(null);
-    const [editLimit, setEditLimit] = React.useState("");
+    const [editForm, setEditForm] = React.useState({ category: "", limit: "" });
+    const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
-    const handleEditSave = () => {
-        if (!editingBudget) return;
-        const newLimit = parseFloat(editLimit);
+    const openEditBudget = (budget: any) => {
+        setEditingBudget(budget);
+        setEditForm({ category: budget.category, limit: budget.limit.toString() });
+        setIsDialogOpen(true);
+    };
 
-        if (isNaN(newLimit) || newLimit <= 0) {
-            toast.error("Por favor, introduce un importe válido mayor a 0.");
+    const openAddBudget = () => {
+        setEditingBudget(null);
+        setEditForm({ category: "", limit: "" });
+        setIsDialogOpen(true);
+    };
+
+    const handleSaveBudget = () => {
+        const newLimit = parseFloat(editForm.limit);
+
+        if (!editForm.category || isNaN(newLimit) || newLimit <= 0) {
+            toast.error("Por favor, introduce una categoría y un importe válido.");
             return;
         }
 
-        setBudgets(budgets.map(b => b.id === editingBudget.id ? { ...b, limit: newLimit } : b));
-        toast.success(`Presupuesto de ${editingBudget.category} actualizado.`);
-        setEditingBudget(null);
+        if (editingBudget) {
+            setBudgets(budgets.map(b => b.id === editingBudget.id ? { ...b, category: editForm.category, limit: newLimit } : b));
+            toast.success(`Presupuesto de ${editForm.category} actualizado.`);
+        } else {
+            setBudgets([...budgets, {
+                id: Math.random().toString(),
+                category: editForm.category,
+                spent: 0,
+                limit: newLimit,
+                color: "bg-primary"
+            }]);
+            toast.success(`Nuevo presupuesto añadido.`);
+        }
+        setIsDialogOpen(false);
     };
+
+    const handleDeleteBudget = (id: string) => {
+        setBudgets(budgets.filter(b => b.id !== id));
+        toast.success("Presupuesto eliminado.");
+    };
+
+    // Resumen de ejemplo
+    const totalAhorro = budgets.reduce((acc, curr) => acc + (curr.limit - curr.spent > 0 ? curr.limit - curr.spent : 0), 0);
+    const excedidos = budgets.filter(b => b.spent > b.limit).length;
 
     return (
         <div className="space-y-6 pb-12">
@@ -54,7 +93,7 @@ export default function BudgetsPage() {
                     <h1 className="text-2xl sm:text-3xl font-bold font-outfit">Presupuestos</h1>
                     <p className="text-sm sm:text-base text-muted-foreground">Controlad vuestros gastos por categoría.</p>
                 </div>
-                <Button className="gap-2 w-full sm:w-auto">
+                <Button className="gap-2 w-full sm:w-auto" onClick={openAddBudget}>
                     <Plus className="w-4 h-4" />
                     Nuevo Presupuesto
                 </Button>
@@ -69,8 +108,8 @@ export default function BudgetsPage() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold font-outfit text-emerald-700">$ 12.450</div>
-                        <p className="text-xs text-emerald-600/80">+5% respecto al mes pasado</p>
+                        <div className="text-3xl font-bold font-outfit text-emerald-700">$ {totalAhorro.toLocaleString()}</div>
+                        <p className="text-xs text-emerald-600/80">Dinero sobrante de presupuestos</p>
                     </CardContent>
                 </Card>
 
@@ -82,8 +121,8 @@ export default function BudgetsPage() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold font-outfit text-red-700">1 Categoría</div>
-                        <p className="text-xs text-red-600/80">Ocio / Salidas se ha pasado por $200</p>
+                        <div className="text-3xl font-bold font-outfit text-red-700">{excedidos} Categoría(s)</div>
+                        <p className="text-xs text-red-600/80">Revisa tus excesos</p>
                     </CardContent>
                 </Card>
 
@@ -95,7 +134,7 @@ export default function BudgetsPage() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold font-outfit text-blue-700">$ 890</div>
+                        <div className="text-3xl font-bold font-outfit text-blue-700">$ 0</div>
                         <p className="text-xs text-blue-600/80">Basado en los últimos 30 días</p>
                     </CardContent>
                 </Card>
@@ -104,7 +143,7 @@ export default function BudgetsPage() {
             <h2 className="text-xl font-semibold font-outfit mt-8">Límites por Categoría</h2>
             <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
                 {budgets.map((budget) => {
-                    const percent = Math.min((budget.spent / budget.limit) * 100, 100);
+                    const percent = budget.limit > 0 ? Math.min((budget.spent / budget.limit) * 100, 100) : 0;
                     const isOver = budget.spent > budget.limit;
 
                     return (
@@ -116,48 +155,18 @@ export default function BudgetsPage() {
                                             <CardTitle className="text-lg font-outfit">{budget.category}</CardTitle>
                                             <CardDescription className="text-xs sm:text-sm">Presupuesto mensual</CardDescription>
                                         </div>
-                                        <Dialog open={editingBudget?.id === budget.id} onOpenChange={(isOpen) => {
-                                            if (isOpen) {
-                                                setEditingBudget(budget);
-                                                setEditLimit(budget.limit.toString());
-                                            } else {
-                                                setEditingBudget(null);
-                                            }
-                                        }}>
-                                            <DialogTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-6 w-6 ml-2 text-muted-foreground hover:text-primary">
-                                                    <PencilLine className="h-3 w-3" />
-                                                </Button>
-                                            </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[425px]">
-                                                <DialogHeader>
-                                                    <DialogTitle>Editar Presupuesto</DialogTitle>
-                                                    <DialogDescription>
-                                                        Ajusta el límite mensual para la categoría <strong>{budget.category}</strong>.
-                                                    </DialogDescription>
-                                                </DialogHeader>
-                                                <div className="grid gap-4 py-4">
-                                                    <div className="grid gap-2">
-                                                        <Label htmlFor="limit">Límite Mensual ($)</Label>
-                                                        <Input
-                                                            id="limit"
-                                                            type="number"
-                                                            value={editLimit}
-                                                            onChange={(e) => setEditLimit(e.target.value)}
-                                                            className="text-lg font-bold"
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <DialogFooter>
-                                                    <Button variant="outline" onClick={() => setEditingBudget(null)}>Cancelar</Button>
-                                                    <Button onClick={handleEditSave}>Guardar Cambios</Button>
-                                                </DialogFooter>
-                                            </DialogContent>
-                                        </Dialog>
                                     </div>
-                                    <Badge variant={isOver ? "destructive" : "outline"} className={!isOver ? "bg-primary/5 text-primary border-primary/20 whitespace-nowrap" : "whitespace-nowrap"}>
-                                        {Math.round((budget.spent / budget.limit) * 100)}%
-                                    </Badge>
+                                    <div className="flex items-center gap-2">
+                                        <Badge variant={isOver ? "destructive" : "outline"} className={!isOver ? "bg-primary/5 text-primary border-primary/20 whitespace-nowrap" : "whitespace-nowrap"}>
+                                            {Math.round(percent)}%
+                                        </Badge>
+                                        <Button variant="ghost" size="icon" className="h-6 w-6 ml-2 text-muted-foreground hover:text-primary" onClick={() => openEditBudget(budget)}>
+                                            <PencilLine className="h-3 w-3" />
+                                        </Button>
+                                        <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-destructive" onClick={() => handleDeleteBudget(budget.id)}>
+                                            <Trash className="h-3 w-3" />
+                                        </Button>
+                                    </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -178,7 +187,48 @@ export default function BudgetsPage() {
                         </Card>
                     );
                 })}
+                {budgets.length === 0 && (
+                    <div className="col-span-full text-center text-sm text-muted-foreground py-10">
+                        No hay presupuestos activos por ahora. Presiona "Nuevo Presupuesto" para comenzar a planificar.
+                    </div>
+                )}
             </div>
+
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>{editingBudget ? "Editar Presupuesto" : "Nuevo Presupuesto"}</DialogTitle>
+                        <DialogDescription>
+                            Define un límite para mantener tus gastos controlados en una categoría específica.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="catname">Categoría</Label>
+                            <Input
+                                id="catname"
+                                value={editForm.category}
+                                onChange={(e) => setEditForm(prev => ({ ...prev, category: e.target.value }))}
+                                placeholder="Ej: Supermercado, Alquiler, etc."
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="limit">Límite Mensual ($)</Label>
+                            <Input
+                                id="limit"
+                                type="number"
+                                value={editForm.limit}
+                                onChange={(e) => setEditForm(prev => ({ ...prev, limit: e.target.value }))}
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
+                        <Button onClick={handleSaveBudget}>{editingBudget ? "Guardar Cambios" : "Crear Presupuesto"}</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
         </div>
     )
 }

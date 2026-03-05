@@ -16,18 +16,35 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
-const mockMembers = [
+const initialMembers = [
     { id: "1", name: "Fico", email: "ficofrones@gmail.com", role: "ADMIN", status: "ACTIVO" },
     { id: "2", name: "Meli", email: "meliefb7@gmail.com", role: "EDITOR", status: "ACTIVO" },
 ];
 
 export default function SettingsPage() {
     const inviteLink = "https://misfinanzas.app/invites/abc-123-token";
+    const [members, setMembers] = React.useState(initialMembers);
+    const router = useRouter();
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(inviteLink);
         toast.success("Enlace de invitación copiado");
+    };
+
+    const handleDeleteMember = (id: string, name: string) => {
+        setMembers(members.filter(m => m.id !== id));
+        toast.success(`Miembro ${name} eliminado del espacio`);
+    };
+
+    const handleFeatureInfo = (feature: string) => {
+        toast.info(`Configuración de ${feature} estará disponible pronto`);
+    };
+
+    const handleLogout = () => {
+        toast.success("Cerrando sesión...");
+        router.push("/");
     };
 
     return (
@@ -49,7 +66,7 @@ export default function SettingsPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-3 sm:space-y-4">
-                                {mockMembers.map((member) => (
+                                {members.map((member) => (
                                     <div key={member.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 rounded-lg bg-background/40 border border-border/20 group hover:border-primary/30 transition-all gap-3 sm:gap-0">
                                         <div className="flex items-center gap-3 sm:gap-4">
                                             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
@@ -66,7 +83,7 @@ export default function SettingsPage() {
                                             </div>
                                         </div>
                                         {member.role !== "ADMIN" && (
-                                            <Button variant="ghost" size="sm" className="w-full sm:w-auto mt-2 sm:mt-0 opacity-100 sm:opacity-0 group-hover:opacity-100 text-destructive hover:bg-destructive/10">
+                                            <Button variant="ghost" size="sm" className="w-full sm:w-auto mt-2 sm:mt-0 opacity-100 sm:opacity-0 group-hover:opacity-100 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteMember(member.id, member.name)}>
                                                 <Trash2 className="w-4 h-4 sm:mr-2" />
                                                 <span className="sm:hidden">Eliminar miembro</span>
                                             </Button>
@@ -107,16 +124,16 @@ export default function SettingsPage() {
                             <CardTitle className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-muted-foreground">Tu Cuenta</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-2">
-                            <Button variant="ghost" className="w-full justify-start gap-3 hover:bg-primary/5 text-sm sm:text-base">
+                            <Button variant="ghost" className="w-full justify-start gap-3 hover:bg-primary/5 text-sm sm:text-base" onClick={() => handleFeatureInfo("Preferencias")}>
                                 <Settings className="w-4 h-4" />
                                 Preferencias
                             </Button>
-                            <Button variant="ghost" className="w-full justify-start gap-3 hover:bg-primary/5 text-sm sm:text-base">
+                            <Button variant="ghost" className="w-full justify-start gap-3 hover:bg-primary/5 text-sm sm:text-base" onClick={() => handleFeatureInfo("Seguridad")}>
                                 <ShieldCheck className="w-4 h-4" />
                                 Seguridad
                             </Button>
                             <div className="pt-4 mt-4 border-t border-border/20">
-                                <Button variant="ghost" className="w-full justify-start gap-3 text-destructive hover:bg-destructive/5 hover:text-destructive text-sm sm:text-base">
+                                <Button variant="ghost" className="w-full justify-start gap-3 text-destructive hover:bg-destructive/5 hover:text-destructive text-sm sm:text-base" onClick={handleLogout}>
                                     <LogOut className="w-4 h-4" />
                                     Cerrar Sesión
                                 </Button>

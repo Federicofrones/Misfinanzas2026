@@ -15,6 +15,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 const mockAlerts = [
     {
@@ -53,9 +55,23 @@ const mockAlerts = [
 
 export default function AlertsPage() {
     const [alerts, setAlerts] = React.useState(mockAlerts);
+    const router = useRouter();
 
     const markAsRead = (id: string) => {
         setAlerts(alerts.map(a => a.id === id ? { ...a, read: true } : a));
+    };
+
+    const markAllAsRead = () => {
+        if (alerts.every(a => a.read)) {
+            toast.info("No hay alertas nuevas para leer");
+            return;
+        }
+        setAlerts(alerts.map(a => ({ ...a, read: true })));
+        toast.success("Todas las alertas marcadas como leídas");
+    };
+
+    const handleSettingsClick = () => {
+        toast.info("Configuraciones de notificaciones próximamente.");
     };
 
     const getIcon = (type: string) => {
@@ -86,12 +102,12 @@ export default function AlertsPage() {
                     <p className="text-sm sm:text-base text-muted-foreground">Notificaciones automáticas sobre sus finanzas.</p>
                 </div>
                 <div className="flex gap-2 w-full sm:w-auto">
-                    <Button variant="outline" className="gap-2 border-border/40 w-full sm:w-auto">
+                    <Button variant="outline" className="gap-2 border-border/40 w-full sm:w-auto" onClick={markAllAsRead}>
                         <CheckCircle className="w-4 h-4" />
                         <span className="hidden sm:inline">Marcar todo leído</span>
                         <span className="inline sm:hidden">Leer todas</span>
                     </Button>
-                    <Button variant="outline" size="icon" className="border-border/40 shrink-0">
+                    <Button variant="outline" size="icon" className="border-border/40 shrink-0" onClick={handleSettingsClick}>
                         <Settings className="w-4 h-4" />
                     </Button>
                 </div>
@@ -140,7 +156,9 @@ export default function AlertsPage() {
 
                                     {alert.type === 'action' && !alert.read && (
                                         <div className="pt-2 sm:pt-3">
-                                            <Button size="sm" className="h-7 sm:h-8 text-xs sm:text-sm">Revisar Conciliación</Button>
+                                            <Button size="sm" className="h-7 sm:h-8 text-xs sm:text-sm" onClick={() => router.push('/app/conciliation')}>
+                                                Revisar Conciliación
+                                            </Button>
                                         </div>
                                     )}
                                 </div>
