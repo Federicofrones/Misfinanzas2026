@@ -23,7 +23,7 @@ const mockMembers = [
 ];
 
 export default function SettingsPage() {
-    const inviteLink = "https://duobudget.app/invites/abc-123-token";
+    const inviteLink = "https://misfinanzas.app/invites/abc-123-token";
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(inviteLink);
@@ -45,7 +45,7 @@ export default function SettingsPage() {
                                 <Users className="w-5 h-5 text-primary" />
                                 Miembros del Espacio
                             </CardTitle>
-                            <CardDescription className="text-xs sm:text-sm">Personas que tienen acceso a este DuoBudget.</CardDescription>
+                            <CardDescription className="text-xs sm:text-sm">Personas que tienen acceso a Mis finanzas.</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-3 sm:space-y-4">

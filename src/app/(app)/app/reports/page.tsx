@@ -347,7 +347,7 @@ export default function ReportsPage() {
                         </div>
                         <h3 className="text-xl font-bold font-outfit mb-2">Más datos próximamente</h3>
                         <p className="text-muted-foreground text-sm max-w-md mx-auto">
-                            A medida que agreguen más transacciones, la IA de DuoBudget generará tendencias, predicciones de gasto y consejos para ahorrar más rápido.
+                            A medida que agreguen más transacciones, la IA de Mis finanzas generará tendencias, predicciones de gasto y consejos para ahorrar más rápido.
                         </p>
                     </Card>
                 </TabsContent>

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { PiggyBank, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { useState } from "react"
 import { auth } from "@/lib/firebase/client"
 import { signInWithEmailAndPassword } from "firebase/auth"
@@ -37,11 +38,11 @@ export default function LoginPage() {
             <Card className="w-full max-w-md border-primary/10 bg-card/50 backdrop-blur-xl shadow-2xl">
                 <CardHeader className="space-y-1 text-center">
                     <div className="flex justify-center mb-4">
-                        <div className="bg-primary/20 p-3 rounded-2xl">
-                            <PiggyBank className="w-8 h-8 text-primary" />
+                        <div className="w-16 h-16 relative rounded-2xl overflow-hidden">
+                            <Image src="/logo.png" alt="Mis finanzas Logo" fill className="object-cover" />
                         </div>
                     </div>
-                    <CardTitle className="text-2xl font-outfit font-bold tracking-tight">DuoBudget</CardTitle>
+                    <CardTitle className="text-2xl font-outfit font-bold tracking-tight">Mis finanzas</CardTitle>
                     <CardDescription>Inicia sesión para gestionar tu economía compartida</CardDescription>
                 </CardHeader>
                 <form onSubmit={handleLogin}>

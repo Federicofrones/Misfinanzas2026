@@ -38,17 +38,19 @@ const items = [
     { title: "Configuración", url: "/app/settings", icon: Settings },
 ]
 
+import Image from "next/image"
+
 export function AppSidebar() {
     const pathname = usePathname()
 
     return (
         <Sidebar variant="floating" collapsible="icon">
             <SidebarHeader className="flex flex-row items-center gap-2 p-4">
-                <div className="bg-primary/20 p-2 rounded-lg">
-                    <PiggyBank className="w-6 h-6 text-primary" />
+                <div className="w-8 h-8 relative rounded-lg overflow-hidden shrink-0">
+                    <Image src="/logo.png" alt="Mis finanzas Logo" fill className="object-cover" />
                 </div>
                 <span className="font-outfit font-bold text-xl tracking-tight group-data-[collapsible=icon]:hidden">
-                    DuoBudget
+                    Mis finanzas
                 </span>
             </SidebarHeader>
             <SidebarContent>

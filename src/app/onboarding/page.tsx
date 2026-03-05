@@ -52,7 +52,7 @@ export default function OnboardingPage() {
                 {step === 1 && (
                     <Card className="border-primary/10 bg-card/50 backdrop-blur-xl shadow-2xl">
                         <CardHeader className="text-center">
-                            <CardTitle className="text-3xl font-outfit">¡Bienvenidos a DuoBudget! 🥂</CardTitle>
+                            <CardTitle className="text-3xl font-outfit">¡Bienvenidos a Mis finanzas! 🥂</CardTitle>
                             <CardDescription>Para empezar, vamos a configurar su espacio compartido.</CardDescription>
                         </CardHeader>
                         <CardContent className="py-10 flex flex-col items-center gap-6">

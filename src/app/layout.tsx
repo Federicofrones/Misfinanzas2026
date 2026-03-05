@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  title: "DuoBudget | Finanzas en Pareja",
+  title: "Mis finanzas | Finanzas en Pareja",
   description: "Gestiona la economía compartida de tu pareja de forma inteligente.",
 };
 
