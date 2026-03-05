@@ -43,39 +43,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 
-const initialTransactions = [
-    {
-        id: "1",
-        type: "expense",
-        amount: 1250,
-        merchant: "Supermercado Tata",
-        date: new Date(),
-        categoryId: "comidas",
-        payerUserId: "user1",
-        attachmentUrl: "https://res.cloudinary.com/dkvdcxi4u/image/upload/v1/tickets/sample",
-        paymentMethod: "credit_card",
-    },
-    {
-        id: "2",
-        type: "income",
-        amount: 55000,
-        merchant: "Salario Fico",
-        date: new Date(Date.now() - 86400000 * 2),
-        categoryId: "sueldo",
-        payerUserId: "user1",
-        attachmentUrl: null,
-    },
-    {
-        id: "3",
-        type: "expense",
-        amount: 450,
-        merchant: "Farmacia",
-        date: new Date(Date.now() - 86400000 * 5),
-        categoryId: "salud",
-        payerUserId: "user2",
-        attachmentUrl: null,
-    }
-];
+const initialTransactions: any[] = [];
 
 export default function TransactionsPage() {
     const [searchTerm, setSearchTerm] = React.useState("");

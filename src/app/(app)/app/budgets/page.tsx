@@ -26,12 +26,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 
-const initialBudgets = [
-    { id: "1", category: "Alimentación", spent: 4500, limit: 6000, color: "bg-emerald-500" },
-    { id: "2", category: "Restaurantes", spent: 2800, limit: 3000, color: "bg-yellow-500" },
-    { id: "3", category: "Transporte", spent: 1200, limit: 1500, color: "bg-blue-500" },
-    { id: "4", category: "Ocio / Salidas", spent: 4200, limit: 4000, color: "bg-red-500" }
-];
+const initialBudgets: any[] = [];
 
 export default function BudgetsPage() {
     const [budgets, setBudgets] = React.useState(initialBudgets);

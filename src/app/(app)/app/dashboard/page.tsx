@@ -29,21 +29,16 @@ import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/lib/auth/guards"
 
 const data = [
-    { name: "Lun", ingresos: 4500, gastos: 2400 },
-    { name: "Mar", ingresos: 3000, gastos: 1398 },
-    { name: "Mie", ingresos: 2000, gastos: 9800 },
-    { name: "Jue", ingresos: 2780, gastos: 3908 },
-    { name: "Vie", ingresos: 1890, gastos: 4800 },
-    { name: "Sab", ingresos: 2390, gastos: 3800 },
-    { name: "Dom", ingresos: 3490, gastos: 4300 },
+    { name: "Lun", ingresos: 0, gastos: 0 },
+    { name: "Mar", ingresos: 0, gastos: 0 },
+    { name: "Mie", ingresos: 0, gastos: 0 },
+    { name: "Jue", ingresos: 0, gastos: 0 },
+    { name: "Vie", ingresos: 0, gastos: 0 },
+    { name: "Sab", ingresos: 0, gastos: 0 },
+    { name: "Dom", ingresos: 0, gastos: 0 },
 ]
 
-const categoryData = [
-    { name: "Alquiler", value: 1200, color: "var(--primary)" },
-    { name: "Supermercado", value: 800, color: "oklch(0.627 0.265 303.9)" },
-    { name: "Ocio", value: 300, color: "oklch(0.488 0.243 264.376)" },
-    { name: "Servicios", value: 200, color: "oklch(0.769 0.188 70.08)" },
-]
+const categoryData: any[] = []
 
 export default function DashboardPage() {
     const { user } = useAuth();
@@ -65,28 +60,28 @@ export default function DashboardPage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatsCard
                     title="Ingresos del Mes"
-                    value="$ 84,200"
-                    change="+12.5%"
+                    value="$ 0"
+                    change="0%"
                     trend="up"
                     icon={TrendingUp}
                     color="text-primary"
                 />
                 <StatsCard
                     title="Gastos del Mes"
-                    value="$ 52,150"
-                    change="-2.4%"
+                    value="$ 0"
+                    change="0%"
                     trend="down"
                     icon={TrendingDown}
                     color="text-destructive"
                 />
                 <StatsCard
                     title="Balance Neto"
-                    value="$ 32,050"
+                    value="$ 0"
                     icon={Wallet}
                 />
                 <StatsCard
                     title="Burn Rate (Proy.)"
-                    value="$ 78,500"
+                    value="$ 0"
                     icon={Zap}
                     description="Gasto total proyectado"
                 />
@@ -124,7 +119,7 @@ export default function DashboardPage() {
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie
-                                        data={[{ value: 60 }, { value: 40 }]}
+                                        data={[{ value: 50 }, { value: 50 }]}
                                         innerRadius={60}
                                         outerRadius={80}
                                         paddingAngle={5}
@@ -136,13 +131,13 @@ export default function DashboardPage() {
                                 </PieChart>
                             </ResponsiveContainer>
                             <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                <span className="text-2xl font-bold font-outfit">$4,200</span>
+                                <span className="text-2xl font-bold font-outfit">$ 0</span>
                                 <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Saldo</span>
                             </div>
                         </div>
                         <div className="text-center">
-                            <p className="text-sm">Alex le debe a Sam</p>
-                            <Badge variant="outline" className="mt-2 text-primary border-primary/30">PENDIENTE</Badge>
+                            <p className="text-sm text-muted-foreground">¡Todo en orden!</p>
+                            <Badge variant="outline" className="mt-2 border-primary/30 text-muted-foreground">SIN DEUDAS</Badge>
                         </div>
                     </CardContent>
                 </Card>
@@ -159,7 +154,9 @@ export default function DashboardPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {categoryData.map((cat) => (
+                            {categoryData.length === 0 ? (
+                                <p className="text-sm text-muted-foreground">Aún no hay gastos registrados.</p>
+                            ) : categoryData.map((cat) => (
                                 <div key={cat.name} className="flex items-center gap-4">
                                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: cat.color }} />
                                     <div className="flex-1">
@@ -183,20 +180,7 @@ export default function DashboardPage() {
                         <CardDescription>Lo que necesita su atención</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="flex items-start gap-4 p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm">
-                            <div className="mt-0.5"><Zap className="w-4 h-4" /></div>
-                            <div>
-                                <p className="font-semibold">¡Límite alcanzado!</p>
-                                <p className="opacity-80">El presupuesto de 'Ocio' ha superado el 100%.</p>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-4 p-3 rounded-xl bg-primary/10 border border-primary/20 text-primary text-sm">
-                            <div className="mt-0.5"><TrendingUp className="w-4 h-4" /></div>
-                            <div>
-                                <p className="font-semibold">Gastos en aumento</p>
-                                <p className="opacity-80">Su gasto en Supermercado es un 15% mayor al mes pasado.</p>
-                            </div>
-                        </div>
+                        <p className="text-sm text-muted-foreground">No hay alertas activas por el momento.</p>
                     </CardContent>
                 </Card>
             </div>

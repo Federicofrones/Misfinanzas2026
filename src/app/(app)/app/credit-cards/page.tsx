@@ -25,18 +25,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { toast } from "sonner"
 
-const initialFixedExpenses = [
-    { id: "1", name: "Netflix", amount: 450, icon: PlayCircle, color: "text-red-500", bgColor: "bg-red-500/10" },
-    { id: "2", name: "Spotify", amount: 190, icon: PlayCircle, color: "text-green-500", bgColor: "bg-green-500/10" },
-    { id: "3", name: "Vercel / Hosting", amount: 800, icon: Server, color: "text-zinc-500", bgColor: "bg-zinc-500/10" },
-];
+const initialFixedExpenses: any[] = [];
 
 export default function CreditCardsPage() {
     // Card state
     const [cardDetails, setCardDetails] = React.useState({
-        name: "Tarjeta Principal VISA",
-        closingDate: "25 del mes",
-        totalDebt: 34500,
+        name: "Mi Tarjeta VISA",
+        closingDate: "-",
+        totalDebt: 0,
         limit: 100000
     });
     const [isCardDialogOpen, setIsCardDialogOpen] = React.useState(false);
@@ -48,7 +44,7 @@ export default function CreditCardsPage() {
     const [expenseForm, setExpenseForm] = React.useState({ name: "", amount: "" });
     const [isExpenseDialogOpen, setIsExpenseDialogOpen] = React.useState(false);
 
-    const percent = Math.min((cardDetails.totalDebt / cardDetails.limit) * 100, 100);
+    const percent = cardDetails.limit > 0 ? Math.min((cardDetails.totalDebt / cardDetails.limit) * 100, 100) : 0;
 
     const openCardEdit = () => {
         setCardForm({
