@@ -79,7 +79,7 @@ const initialTransactions = [
 
 export default function TransactionsPage() {
     const [searchTerm, setSearchTerm] = React.useState("");
-    const [transactions, setTransactions] = React.useState(initialTransactions);
+    const [transactions, setTransactions] = React.useState<any[]>(initialTransactions);
     const [editingTx, setEditingTx] = React.useState<any>(null);
     const [editForm, setEditForm] = React.useState({ merchant: "", amount: "", categoryId: "", type: "", paymentMethod: "cash_debit" });
 
