@@ -9,7 +9,9 @@ import {
     ArrowUpRight,
     ArrowDownLeft,
     Receipt,
-    Eye
+    MoreHorizontal,
+    Edit,
+    Trash
 } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
@@ -24,9 +26,24 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { toast } from "sonner"
 
-// Mock data para visualización inicial (esto vendría de Firestore en producción)
-const mockTransactions = [
+const initialTransactions = [
     {
         id: "1",
         type: "expense",
@@ -41,7 +58,7 @@ const mockTransactions = [
         id: "2",
         type: "income",
         amount: 55000,
-        merchant: "Salario Federico",
+        merchant: "Salario Fico",
         date: new Date(Date.now() - 86400000 * 2),
         categoryId: "sueldo",
         payerUserId: "user1",
@@ -61,6 +78,50 @@ const mockTransactions = [
 
 export default function TransactionsPage() {
     const [searchTerm, setSearchTerm] = React.useState("");
+    const [transactions, setTransactions] = React.useState(initialTransactions);
+    const [editingTx, setEditingTx] = React.useState<any>(null);
+    const [editForm, setEditForm] = React.useState({ merchant: "", amount: "", categoryId: "", type: "" });
+
+    const openEditDialog = (tx: any) => {
+        setEditingTx(tx);
+        setEditForm({
+            merchant: tx.merchant,
+            amount: tx.amount.toString(),
+            categoryId: tx.categoryId,
+            type: tx.type
+        });
+    };
+
+    const handleEditSave = () => {
+        if (!editingTx) return;
+        const newAmount = parseFloat(editForm.amount);
+
+        if (isNaN(newAmount) || newAmount <= 0) {
+            toast.error("Por favor, introduce un importe válido.");
+            return;
+        }
+
+        setTransactions(transactions.map(tx =>
+            tx.id === editingTx.id ? {
+                ...tx,
+                merchant: editForm.merchant,
+                amount: newAmount,
+                categoryId: editForm.categoryId,
+                type: editForm.type
+            } : tx
+        ));
+        toast.success("Transacción actualizada con éxito.");
+        setEditingTx(null);
+    };
+
+    const handleDelete = (id: string) => {
+        setTransactions(transactions.filter(tx => tx.id !== id));
+        toast.success("Transacción eliminada.");
+    };
+
+    const filteredTransactions = transactions.filter(tx =>
+        tx.merchant.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className="space-y-6 pb-12">
@@ -100,11 +161,12 @@ export default function TransactionsPage() {
                                         <TableHead className="hidden md:table-cell">Categoría</TableHead>
                                         <TableHead className="hidden sm:table-cell">Pagado por</TableHead>
                                         <TableHead className="text-right">Monto</TableHead>
-                                        <TableHead className="w-[60px] sm:w-[80px] text-center">Ticket</TableHead>
+                                        <TableHead className="w-[50px] sm:w-[60px] text-center">Ticket</TableHead>
+                                        <TableHead className="w-[50px] text-right"></TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {mockTransactions.map((tx) => (
+                                    {filteredTransactions.map((tx) => (
                                         <TableRow key={tx.id} className="hover:bg-muted/30 transition-colors">
                                             <TableCell className="text-muted-foreground text-[10px] sm:text-xs">
                                                 {format(tx.date, "dd MMM, yy", { locale: es })}
@@ -132,7 +194,7 @@ export default function TransactionsPage() {
                                                     <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px] font-bold text-emerald-600">
                                                         {tx.payerUserId === "user1" ? "F" : "M"}
                                                     </div>
-                                                    <span className="text-xs">{tx.payerUserId === "user1" ? "Federico" : "Meli"}</span>
+                                                    <span className="text-xs">{tx.payerUserId === "user1" ? "Fico" : "Meli"}</span>
                                                 </div>
                                             </TableCell>
                                             <TableCell className={`text-right font-bold ${tx.type === 'income' ? 'text-emerald-500' : 'text-foreground'}`}>
@@ -160,14 +222,98 @@ export default function TransactionsPage() {
                                                     </div>
                                                 )}
                                             </TableCell>
+                                            <TableCell className="text-right">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                            <span className="sr-only">Abrir menú</span>
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuItem onClick={() => openEditDialog(tx)}>
+                                                            <Edit className="mr-2 h-4 w-4" />
+                                                            <span>Editar</span>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleDelete(tx.id)} className="text-destructive focus:bg-destructive/10 focus:text-destructive">
+                                                            <Trash className="mr-2 h-4 w-4" />
+                                                            <span>Eliminar</span>
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
                                         </TableRow>
                                     ))}
+                                    {filteredTransactions.length === 0 && (
+                                        <TableRow>
+                                            <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                                                No se encontraron transacciones.
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
                                 </TableBody>
                             </Table>
                         </div>
                     </div>
                 </CardContent>
             </Card>
+
+            <Dialog open={!!editingTx} onOpenChange={(open) => !open && setEditingTx(null)}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Editar Transacción</DialogTitle>
+                        <DialogDescription>
+                            Modifica los datos de la transacción seleccionada.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="merchant">Comercio / Descripción</Label>
+                            <Input
+                                id="merchant"
+                                value={editForm.merchant}
+                                onChange={(e) => setEditForm(prev => ({ ...prev, merchant: e.target.value }))}
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="amount">Monto ($)</Label>
+                            <Input
+                                id="amount"
+                                type="number"
+                                step="0.01"
+                                value={editForm.amount}
+                                onChange={(e) => setEditForm(prev => ({ ...prev, amount: e.target.value }))}
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="grid gap-2">
+                                <Label htmlFor="type">Tipo</Label>
+                                <select
+                                    id="type"
+                                    className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    value={editForm.type}
+                                    onChange={(e) => setEditForm(prev => ({ ...prev, type: e.target.value }))}
+                                >
+                                    <option value="expense">Gasto</option>
+                                    <option value="income">Ingreso</option>
+                                </select>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="category">Categoría</Label>
+                                <Input
+                                    id="category"
+                                    value={editForm.categoryId}
+                                    onChange={(e) => setEditForm(prev => ({ ...prev, categoryId: e.target.value }))}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setEditingTx(null)}>Cancelar</Button>
+                        <Button onClick={handleEditSave}>Guardar Cambios</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
