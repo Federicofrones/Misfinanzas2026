@@ -10,7 +10,8 @@ import {
     Bell,
     Settings,
     PlusCircle,
-    LogOut
+    LogOut,
+    CreditCard
 } from "lucide-react"
 
 import {
@@ -34,6 +35,7 @@ const items = [
     { title: "Presupuestos", url: "/app/budgets", icon: PiggyBank },
     { title: "Reportes", url: "/app/reports", icon: BarChart3 },
     { title: "Conciliación", url: "/app/reconcile", icon: Scale },
+    { title: "Tarjetas", url: "/app/credit-cards", icon: CreditCard },
     { title: "Alertas", url: "/app/alerts", icon: Bell },
     { title: "Configuración", url: "/app/settings", icon: Settings },
 ]

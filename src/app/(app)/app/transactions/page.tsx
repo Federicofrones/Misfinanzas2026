@@ -53,6 +53,7 @@ const initialTransactions = [
         categoryId: "comidas",
         payerUserId: "user1",
         attachmentUrl: "https://res.cloudinary.com/dkvdcxi4u/image/upload/v1/tickets/sample",
+        paymentMethod: "credit_card",
     },
     {
         id: "2",
@@ -80,7 +81,7 @@ export default function TransactionsPage() {
     const [searchTerm, setSearchTerm] = React.useState("");
     const [transactions, setTransactions] = React.useState(initialTransactions);
     const [editingTx, setEditingTx] = React.useState<any>(null);
-    const [editForm, setEditForm] = React.useState({ merchant: "", amount: "", categoryId: "", type: "" });
+    const [editForm, setEditForm] = React.useState({ merchant: "", amount: "", categoryId: "", type: "", paymentMethod: "cash_debit" });
 
     const openEditDialog = (tx: any) => {
         setEditingTx(tx);
@@ -88,7 +89,8 @@ export default function TransactionsPage() {
             merchant: tx.merchant,
             amount: tx.amount.toString(),
             categoryId: tx.categoryId,
-            type: tx.type
+            type: tx.type,
+            paymentMethod: tx.paymentMethod || "cash_debit"
         });
     };
 
@@ -107,7 +109,8 @@ export default function TransactionsPage() {
                 merchant: editForm.merchant,
                 amount: newAmount,
                 categoryId: editForm.categoryId,
-                type: editForm.type
+                type: editForm.type,
+                paymentMethod: editForm.paymentMethod
             } : tx
         ));
         toast.success("Transacción actualizada con éxito.");
@@ -181,13 +184,25 @@ export default function TransactionsPage() {
                                                             {tx.categoryId}
                                                         </Badge>
                                                         <span className="text-[10px] text-muted-foreground">{tx.payerUserId === "user1" ? "Fico" : "Meli"}</span>
+                                                        {tx.paymentMethod === 'credit_card' && (
+                                                            <Badge variant="outline" className="px-1.5 py-0 text-[9px] font-normal border-primary/30 text-primary bg-primary/5">
+                                                                Tarjeta
+                                                            </Badge>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </TableCell>
                                             <TableCell className="hidden md:table-cell">
-                                                <Badge variant="secondary" className="capitalize font-normal bg-primary/5 text-primary hover:bg-primary/10 border-primary/20">
-                                                    {tx.categoryId}
-                                                </Badge>
+                                                <div className="flex items-center gap-2">
+                                                    <Badge variant="secondary" className="capitalize font-normal bg-primary/5 text-primary hover:bg-primary/10 border-primary/20">
+                                                        {tx.categoryId}
+                                                    </Badge>
+                                                    {tx.paymentMethod === 'credit_card' && (
+                                                        <Badge variant="outline" className="hidden lg:inline-flex text-[10px] font-medium border-primary/30 text-primary">
+                                                            Crédito
+                                                        </Badge>
+                                                    )}
+                                                </div>
                                             </TableCell>
                                             <TableCell className="hidden sm:table-cell">
                                                 <div className="flex items-center gap-2">
@@ -296,6 +311,18 @@ export default function TransactionsPage() {
                                 >
                                     <option value="expense">Gasto</option>
                                     <option value="income">Ingreso</option>
+                                </select>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="paymentMethod">Método de Pago</Label>
+                                <select
+                                    id="paymentMethod"
+                                    className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    value={editForm.paymentMethod}
+                                    onChange={(e) => setEditForm(prev => ({ ...prev, paymentMethod: e.target.value }))}
+                                >
+                                    <option value="cash_debit">Efectivo / Débito</option>
+                                    <option value="credit_card">Tarjeta de Crédito</option>
                                 </select>
                             </div>
                             <div className="grid gap-2">

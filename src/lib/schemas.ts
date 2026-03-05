@@ -14,6 +14,7 @@ export const transactionSchema = z.object({
     note: z.string().nullable(),
     tags: z.array(z.string()),
     attachmentUrl: z.string().nullable(),
+    paymentMethod: z.enum(['cash_debit', 'credit_card']).default('cash_debit').optional(),
 });
 
 export type Transaction = z.infer<typeof transactionSchema>;

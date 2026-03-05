@@ -57,6 +57,7 @@ export function TransactionDialog({ workspaceId }: { workspaceId: string }) {
             note: "",
             tags: [],
             attachmentUrl: null,
+            paymentMethod: "cash_debit",
         },
     })
 
@@ -142,6 +143,28 @@ export function TransactionDialog({ workspaceId }: { workspaceId: string }) {
                                 )}
                             />
                         </div>
+
+                        <FormField
+                            control={form.control}
+                            name="paymentMethod"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Método de Pago</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Seleccione método" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="cash_debit">Efectivo / Débito / Transferencia</SelectItem>
+                                            <SelectItem value="credit_card">Tarjeta de Crédito</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         <FormField
                             control={form.control}
