@@ -49,16 +49,28 @@ export default function TransactionsPage() {
     const [searchTerm, setSearchTerm] = React.useState("");
     const [transactions, setTransactions] = React.useState<any[]>(initialTransactions);
     const [editingTx, setEditingTx] = React.useState<any>(null);
-    const [editForm, setEditForm] = React.useState({ merchant: "", amount: "", categoryId: "", type: "", paymentMethod: "cash_debit" });
+    const [editForm, setEditForm] = React.useState({
+        merchant: "",
+        amount: "",
+        categoryId: "",
+        type: "",
+        paymentMethod: "cash_debit",
+        productName: "",
+        quantity: "",
+        unit: ""
+    });
 
     const openEditDialog = (tx: any) => {
         setEditingTx(tx);
         setEditForm({
-            merchant: tx.merchant,
-            amount: tx.amount.toString(),
-            categoryId: tx.categoryId,
-            type: tx.type,
-            paymentMethod: tx.paymentMethod || "cash_debit"
+            merchant: tx.merchant || "",
+            amount: tx.amount ? tx.amount.toString() : "",
+            categoryId: tx.categoryId || "",
+            type: tx.type || "expense",
+            paymentMethod: tx.paymentMethod || "cash_debit",
+            productName: tx.productName || "",
+            quantity: tx.quantity ? tx.quantity.toString() : "",
+            unit: tx.unit || ""
         });
     };
 
@@ -71,6 +83,14 @@ export default function TransactionsPage() {
             return;
         }
 
+        let newQuantity: number | undefined = parseFloat(editForm.quantity);
+        if (isNaN(newQuantity) || newQuantity <= 0) newQuantity = undefined;
+
+        let unitPrice: number | undefined = undefined;
+        if (newAmount > 0 && newQuantity && newQuantity > 0) {
+            unitPrice = newAmount / newQuantity;
+        }
+
         setTransactions(transactions.map(tx =>
             tx.id === editingTx.id ? {
                 ...tx,
@@ -78,7 +98,11 @@ export default function TransactionsPage() {
                 amount: newAmount,
                 categoryId: editForm.categoryId,
                 type: editForm.type,
-                paymentMethod: editForm.paymentMethod
+                paymentMethod: editForm.paymentMethod,
+                productName: editForm.productName,
+                quantity: newQuantity,
+                unit: editForm.unit,
+                unitPrice: unitPrice
             } : tx
         ));
         toast.success("Transacción actualizada con éxito.");
@@ -257,6 +281,48 @@ export default function TransactionsPage() {
                                 value={editForm.merchant}
                                 onChange={(e) => setEditForm(prev => ({ ...prev, merchant: e.target.value }))}
                             />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="productName">Producto (Opcional)</Label>
+                            <Input
+                                id="productName"
+                                placeholder="Ej: Bidón de agua"
+                                value={editForm.productName}
+                                onChange={(e) => setEditForm(prev => ({ ...prev, productName: e.target.value }))}
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="grid gap-2">
+                                <Label htmlFor="quantity">Cantidad (Opcional)</Label>
+                                <Input
+                                    id="quantity"
+                                    type="number"
+                                    step="0.01"
+                                    value={editForm.quantity}
+                                    onChange={(e) => setEditForm(prev => ({ ...prev, quantity: e.target.value }))}
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="unit">Unidad (Opcional)</Label>
+                                <select
+                                    id="unit"
+                                    className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    value={editForm.unit}
+                                    onChange={(e) => setEditForm(prev => ({ ...prev, unit: e.target.value }))}
+                                >
+                                    <option value="">Seleccionar</option>
+                                    <option value="unidad">Unidad</option>
+                                    <option value="kg">Kg</option>
+                                    <option value="g">g</option>
+                                    <option value="litro">Litro</option>
+                                    <option value="ml">ml</option>
+                                    <option value="bidon">Bidón</option>
+                                    <option value="paquete">Paquete</option>
+                                    <option value="docena">Docena</option>
+                                    <option value="caja">Caja</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                            </div>
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="amount">Monto ($)</Label>

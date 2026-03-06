@@ -45,6 +45,8 @@ import {
 } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
+import { getTransactions } from "@/actions/transactions"
+import { SavingsDashboard } from "@/components/reports/savings-dashboard"
 
 // --- Mock Data ---
 const dataMensual = [
@@ -100,6 +102,15 @@ const renderCustomTooltip = ({ active, payload, label }: any) => {
 export default function ReportsPage() {
     const [date, setDate] = React.useState<Date | undefined>(new Date())
     const [dateRange, setDateRange] = React.useState("last-6")
+    const [transactions, setTransactions] = React.useState<any[]>([])
+
+    React.useEffect(() => {
+        getTransactions("default-workspace").then((res) => {
+            if (res.success && res.transactions) {
+                setTransactions(res.transactions);
+            }
+        });
+    }, []);
 
     const handlePresetChange = (value: string) => {
         setDateRange(value);
@@ -162,6 +173,7 @@ export default function ReportsPage() {
                 <div className="overflow-x-auto pb-2 scrollbar-hide -mx-6 px-6 sm:mx-0 sm:px-0">
                     <TabsList className="bg-muted/50 border border-border/40 min-w-max">
                         <TabsTrigger value="overview">Flujo General</TabsTrigger>
+                        <TabsTrigger value="savings" className="text-emerald-500 font-bold data-[state=active]:bg-emerald-500/10">Ahorro Inteligente</TabsTrigger>
                         <TabsTrigger value="categories">Por Categoría</TabsTrigger>
                         <TabsTrigger value="split">Reparto Personal</TabsTrigger>
                         <TabsTrigger value="trends">Tendencias</TabsTrigger>
@@ -350,6 +362,10 @@ export default function ReportsPage() {
                             A medida que agreguen más transacciones, la IA de Mis finanzas generará tendencias, predicciones de gasto y consejos para ahorrar más rápido.
                         </p>
                     </Card>
+                </TabsContent>
+
+                <TabsContent value="savings" className="space-y-6 mt-0">
+                    <SavingsDashboard transactions={transactions} />
                 </TabsContent>
             </Tabs>
         </div>

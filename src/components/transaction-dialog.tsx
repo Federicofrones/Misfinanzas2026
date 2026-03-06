@@ -54,6 +54,9 @@ export function TransactionDialog({ workspaceId }: { workspaceId: string }) {
             splitMode: "shared_even",
             splitPercents: null,
             merchant: "",
+            productName: "",
+            quantity: undefined,
+            unit: "",
             note: "",
             tags: [],
             attachmentUrl: null,
@@ -65,8 +68,14 @@ export function TransactionDialog({ workspaceId }: { workspaceId: string }) {
         if (!auth.currentUser) return toast.error("No autenticado")
 
         setIsSubmitting(true)
+        let unitPrice = undefined;
+        if (values.amount && values.quantity && values.quantity > 0) {
+            unitPrice = values.amount / values.quantity;
+        }
+
         const res = await createTransaction(workspaceId, {
             ...values,
+            unitPrice,
             payerUserId: auth.currentUser.uid
         })
         setIsSubmitting(false)
@@ -171,7 +180,7 @@ export function TransactionDialog({ workspaceId }: { workspaceId: string }) {
                             name="merchant"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Comercio / Descripción</FormLabel>
+                                    <FormLabel>Comercio</FormLabel>
                                     <FormControl>
                                         <Input placeholder="Ej: Supermercado Tata" {...field} value={field.value || ''} />
                                     </FormControl>
@@ -179,6 +188,74 @@ export function TransactionDialog({ workspaceId }: { workspaceId: string }) {
                                 </FormItem>
                             )}
                         />
+
+                        <FormField
+                            control={form.control}
+                            name="productName"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Producto (Opcional)</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Ej: Bidón de agua 6L" {...field} value={field.value || ''} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="quantity"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Cantidad (Opcional)</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="number"
+                                                step="0.01"
+                                                placeholder="Ej: 2"
+                                                value={field.value === undefined || field.value === null ? '' : field.value}
+                                                onChange={e => {
+                                                    const val = parseFloat(e.target.value);
+                                                    field.onChange(isNaN(val) ? undefined : val);
+                                                }}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="unit"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Unidad (Opcional)</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value || undefined}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Seleccionar" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="unidad">Unidad</SelectItem>
+                                                <SelectItem value="kg">Kg</SelectItem>
+                                                <SelectItem value="g">g</SelectItem>
+                                                <SelectItem value="litro">Litro</SelectItem>
+                                                <SelectItem value="ml">ml</SelectItem>
+                                                <SelectItem value="bidon">Bidón</SelectItem>
+                                                <SelectItem value="paquete">Paquete</SelectItem>
+                                                <SelectItem value="docena">Docena</SelectItem>
+                                                <SelectItem value="caja">Caja</SelectItem>
+                                                <SelectItem value="otro">Otro</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
 
                         <FormField
                             control={form.control}
