@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { PiggyBank, ArrowRight } from "lucide-react"
 import Link from "next/link"
-import Image from "next/image"
+import { Logo } from "@/components/ui/logo"
 import { useState } from "react"
 import { auth } from "@/lib/firebase/client"
 import { signInWithEmailAndPassword } from "firebase/auth"
@@ -38,8 +38,8 @@ export default function LoginPage() {
             <Card className="w-full max-w-md border-primary/10 bg-card/50 backdrop-blur-xl shadow-2xl">
                 <CardHeader className="space-y-1 text-center">
                     <div className="flex justify-center mb-4">
-                        <div className="w-16 h-16 relative rounded-2xl overflow-hidden">
-                            <Image src="/logo.png" alt="Mis finanzas Logo" fill className="object-cover" />
+                        <div className="w-16 h-16 relative">
+                            <Logo />
                         </div>
                     </div>
                     <CardTitle className="text-2xl font-outfit font-bold tracking-tight">Mis finanzas</CardTitle>

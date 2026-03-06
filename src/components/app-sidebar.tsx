@@ -40,8 +40,8 @@ const items = [
     { title: "Configuración", url: "/app/settings", icon: Settings },
 ]
 
-import Image from "next/image"
 import { useSidebar } from "@/components/ui/sidebar"
+import { Logo } from "@/components/ui/logo"
 
 export function AppSidebar() {
     const pathname = usePathname()
@@ -50,8 +50,8 @@ export function AppSidebar() {
     return (
         <Sidebar variant="floating" collapsible="icon">
             <SidebarHeader className="flex flex-row items-center gap-2 p-4">
-                <div className="w-8 h-8 relative rounded-lg overflow-hidden shrink-0">
-                    <Image src="/logo.png" alt="Mis finanzas Logo" fill className="object-cover" />
+                <div className="w-8 h-8 relative shrink-0">
+                    <Logo />
                 </div>
                 <span className="font-outfit font-bold text-xl tracking-tight group-data-[collapsible=icon]:hidden">
                     Mis finanzas
